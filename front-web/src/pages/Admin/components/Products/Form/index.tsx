@@ -17,7 +17,7 @@ const Form = () => {
     const [formData, setFormData] = useState<FormState>({
         name: '',
         price:'',
-        category:'1',
+        category:'1+',
         description:'' 
     });
    
