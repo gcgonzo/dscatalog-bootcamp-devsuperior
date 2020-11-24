@@ -19,7 +19,7 @@ const PrivateRoute = ({ children, path, allewdRoutes }: Props) => {
                     return (
                         <Redirect
                             to={{
-                                pathname: '/admin/auth/login',
+                                pathname: '/auth/login',
                                 state: { from: location }
                             }}
                         />
