@@ -7,12 +7,12 @@ import BaseForm from '../../BaseForm';
 import "./styles.scss";
 
 
-
 type FormState = {
     name: string;
     price: string;
-    imgUrl: string;
     description:string;
+    imgUrl: string;
+   
 }
 
 const Form = () => {
@@ -21,7 +21,7 @@ const Form = () => {
 
     const onSubmit = (data: FormState) => {
        //console.log(data);
-        makePrivateRequest({ url:'/products', method: 'POST', data: data })
+        makePrivateRequest({ url:'/products', method:'POST', data })
         .then(() =>{
             toast.info('Produto Cadastrado com Sucesso!');
             history.push('/admin/products');
