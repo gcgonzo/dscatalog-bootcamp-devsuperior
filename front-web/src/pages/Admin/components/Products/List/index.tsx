@@ -7,22 +7,24 @@ import Card from '../Card';
 
 const List = () => {
     const [productsResponse, setProductsResponse] = useState<ProductsResponse>();
-    //const [isLoadind, setIsLoading] = useState(false);
+    const [isLoadind, setIsLoading] = useState(false);
     const [activePage, setActivePage] = useState(0);
     const history = useHistory();
 
-    console.log(productsResponse);
+    //console.log(productsResponse);
 
     useEffect(() => {
         const params = {
             page: activePage,
-            linesPerPage: 4
+            linesPerPage: 4,
+            direction : 'DESC',
+            orderBy: 'id'
         }
-       // setIsLoading(true); //iniciar o loader
+        setIsLoading(true); //iniciar o loader
         makeRequest({ url: '/products', params })
             .then(response => setProductsResponse(response.data))
             .finally(() => {
-               // setIsLoading(false);//finalizar o loader
+                setIsLoading(false);//finalizar o loader
             });
     }, [activePage]);
    
