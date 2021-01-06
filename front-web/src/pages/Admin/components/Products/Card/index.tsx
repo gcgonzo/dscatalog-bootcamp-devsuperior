@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 type Props = {
     product: Product;
     onRemove: (productId: number) => void;
+    
 }
 
 const Card = ( { product, onRemove }: Props ) => {
