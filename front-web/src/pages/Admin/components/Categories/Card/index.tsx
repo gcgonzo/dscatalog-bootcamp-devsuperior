@@ -18,11 +18,10 @@ const Card = ({ category }: Props) => {
             </div>
             <div className="col-3 pt-4 pr-5">
                 <Link 
-                    to=""
+                    to={`/admin/categories/${category.id}`}
                     className="btn btn-outline-secondary btn-block border-radius-10 btn-edit"               
                 >
-                    EDITAR
-                
+                    EDITAR                
                 </Link>
 
 
@@ -30,8 +29,7 @@ const Card = ({ category }: Props) => {
             <div className="col-3 pt-4 pr-5">
                 <button 
                         type="button" 
-                        className="btn btn-outline-danger btn-block border-radius-10 "
-                           
+                        className="btn btn-outline-danger btn-block border-radius-10 "                           
                 > 
                             EXCLUIR
                         </button>

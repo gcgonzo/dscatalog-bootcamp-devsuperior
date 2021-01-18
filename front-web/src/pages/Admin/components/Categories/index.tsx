@@ -10,11 +10,8 @@ const Categories = () => {
                 <Route path="/admin/categories" exact>
                     <List/>
                 </Route>
-                <Route path="/admin/categories/create">
-                    <Form/>
-                </Route>
                 <Route path="/admin/categories/:categoriesId">
-                    <h1>Editar uma categoria</h1>
+                    <Form/>
                 </Route>
             </Switch>
         </div>

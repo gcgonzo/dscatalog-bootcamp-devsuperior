@@ -21,9 +21,6 @@ public class UserInsertDTO extends UserDTO{
 		this.password = password;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
 	
 	
 	

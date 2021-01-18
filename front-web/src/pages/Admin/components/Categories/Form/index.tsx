@@ -1,5 +1,8 @@
-import { makePrivateRequest } from 'core/utils/request';
-import React, { useState } from 'react';
+import { makePrivateRequest, makeRequest } from 'core/utils/request';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useHistory, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import BaseForm from '../../BaseForm';
 import './styles.scss';
 
@@ -7,48 +10,70 @@ type FormState = {
     name: string;   
 }
 
+type ParamsType = {
+    categoriesId: string;
+}
+
 const Form = () => {
-    const [formData, setFormData] = useState<FormState>({
-        name: ''
-    });
+    const{register, handleSubmit, errors, setValue} = useForm<FormState>();
+    const history = useHistory();
+    const {categoriesId} = useParams<ParamsType>();
+    const isEditing = categoriesId !== 'create';
+    const formTitle = isEditing ? 'Editar Categoria': 'Cadastrar uma Categoria'
 
-    const handleOnChange = (event: React.ChangeEvent<HTMLInputElement> ) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        
-        setFormData(data => ({...data, [name]: value}));
-    }
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const payload = {
-            ...formData
+    useEffect(() =>{
+        if(isEditing) {
+            makeRequest({url: `/categories/${categoriesId}`})
+        .then(response => {
+            setValue('name', response.data.name);
+        })
         }
-        makePrivateRequest({ url: '/categories', method:'POST', data: payload})
+
+    }, [categoriesId, isEditing, setValue]);
+   
+    const onSubmit = (data: FormState) =>{
+        makePrivateRequest({ 
+            url: isEditing ? `/categories/${categoriesId}` : '/categories', 
+            method: isEditing ? 'PUT' : 'POST', 
+            data
+        })
         .then(() => {
-            setFormData({name: ''});
-        });
+            toast.info('Categoria salva com sucesso!');
+            history.push('/admin/categories');
+        })
+        .catch(() => {
+            toast.error('Erro ao salvar a Categoria!');
+        })
     }
-    
 
     return(
 
-        <form onSubmit={handleSubmit}>
-            <BaseForm title="CADASTRAR UMA CATEGORIA">
-                <div className="row">
-                    <div className="col-10">
-                        <input 
-                            value={formData.name}
-                            name="name"
-                            type="text" 
-                            className="form-control input-base" 
-                            placeholder="Nome da categoria"
-                            onChange={handleOnChange}
-                        />
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <BaseForm 
+                title={formTitle}>
+                    <div className="row">
+                        <div className="col-10">
+                            <input 
+                                ref={register({
+                                    required: "Campo Obrigatório",
+                                    minLength: {value: 5, message: 'O campo tem que ter o mínimo de 5 caracteres'},
+                                    maxLength: {value: 60, message: 'O campo tem que ter o máximo de 60 caracteres'}
+                                })}                            
+                                name="name"
+                                type="text" 
+                                className="form-control input-base" 
+                                placeholder="Nome da categoria"
+                            
+                            />
+                            {errors.name && (
+                                    <div className="invalid-feedback d-block" >
+                                        Campo Obrigatório
+                                    </div>                        
+                                )}
+
+                        </div>
 
                     </div>
-
-                </div>
 
             </BaseForm>
         </form>
