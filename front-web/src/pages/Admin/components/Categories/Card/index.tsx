@@ -1,13 +1,20 @@
+import { Category } from 'core/types/Product';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './styles.scss';
 
-const Card = () => {
+type Props = {
+    category: Category;
+}
+
+const Card = ({ category }: Props) => {
     return(
     <div className="card-base category-card-admin">
         <div className="row">
             <div className="col-6 text-left py-3">
-                <h1 className="category-card-name-admin">NAME</h1>
+                <h1 className="category-card-admin">
+                    {category.name}
+                </h1>
             </div>
             <div className="col-3 pt-4 pr-5">
                 <Link 
