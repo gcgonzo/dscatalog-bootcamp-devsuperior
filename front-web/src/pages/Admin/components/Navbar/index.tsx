@@ -19,7 +19,7 @@ const Navbar = () => (
             {isAllowedByRole(['ROLE_ADMIN']) && (
                 <li>
                     <NavLink to="/admin/users" className="admin-nav-item" >
-                        Minhas Usuários
+                        Meus Usuários
                 </NavLink>
                 </li>
             )}
