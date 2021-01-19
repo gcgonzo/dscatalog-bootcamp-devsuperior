@@ -17,7 +17,7 @@ const List = () =>{
     const getCategories = useCallback(() => {
         const params = {
             page: activePage,
-            linesPerPage: 4,
+            linesPerPage: 6,
             direction: 'DESC',
             orderBy: 'id'
 

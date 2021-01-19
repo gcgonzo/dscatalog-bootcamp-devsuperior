@@ -17,7 +17,7 @@ const Card = ({ category, onRemove }: Props) => {
                     {category.name}
                 </h1>
             </div>
-            <div className="col-3 pt-4 pr-5">
+            <div className="col-3 pt-3 pr-5">
                 <Link 
                     to={`/admin/categories/${category.id}`}
                     className="btn btn-outline-secondary btn-block border-radius-10 btn-edit"               
@@ -27,14 +27,14 @@ const Card = ({ category, onRemove }: Props) => {
 
 
             </div>
-            <div className="col-3 pt-4 pr-5">
+            <div className="col-3 pt-3 pr-5">
                 <button 
                         type="button" 
-                        className="btn btn-outline-danger btn-block border-radius-10 "
+                        className="btn btn-outline-danger btn-block border-radius-10 btn-excluir"
                         onClick={() => onRemove(category.id)}                           
                 > 
                             EXCLUIR
-                        </button>
+                </button>
             </div>        
         </div>   
     </div>        
