@@ -5,6 +5,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Card from '../Card';
+import CardLoader from '../Loaders/CategoryCardLoader';
 
 const List = () =>{
 
@@ -56,9 +57,12 @@ const onRemove = (categoriesId: number) => {
                 ADICIONAR
             </button>
             <div className="admin-list-container">
-                {categoryResponse?.content.map(cat =>
-                    <Card category={cat} key={cat.id} onRemove={onRemove}/>    
-                )}  
+                {isLoadind ? <CardLoader /> : (
+                    categoryResponse?.content.map(cat =>
+                        <Card category={cat} key={cat.id} onRemove={onRemove}/>    
+                    )
+                )}
+                 
                 {categoryResponse && (
                 <Pagination
                     totalPages={categoryResponse?.totalPages}
