@@ -22,7 +22,7 @@ const Card = ({user}: Props) => {
                 </div>
                 <div className="col-3 pt-3 pr-5">
                     <Link 
-                        to=''
+                        to={`/admin/users/${user.id}`}
                         className="btn btn-outline-secondary btn-block border-radius-10 btn-edit "               
                     >
                         EDITAR                

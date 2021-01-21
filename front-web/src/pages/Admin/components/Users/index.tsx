@@ -10,11 +10,8 @@ const Users = () => {
                 <Route path="/admin/users" exact>
                     <List/>
                 </Route>
-                <Route path="/admin/users/create">
-                    <Form />
-                </Route>
                 <Route path="/admin/users/:usersId">
-                    <h1>Editar um usuários</h1>
+                    <Form />
                 </Route>
             </Switch>
         </div>
