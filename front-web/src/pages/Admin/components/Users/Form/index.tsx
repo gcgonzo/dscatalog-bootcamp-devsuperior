@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import { makePrivateRequest } from 'core/utils/request';
 import { toast } from 'react-toastify';
 import BaseForm from '../../BaseForm';
@@ -14,13 +14,38 @@ type FormState = {
     role: string;   
 }
 
+type ParamsType =  {
+    userId: string;
+}
+
 const Form = () => {
 
-    const {register, handleSubmit, errors} = useForm<FormState>();
+    const {register, handleSubmit, errors, setValue} = useForm<FormState>();
     const history = useHistory();
+    const { userId } = useParams<ParamsType>();
+    const isEditing = userId !== 'create';
+    const formTitle = isEditing ? 'Editar usuário' : 'Cadastrar um usuário'
+    
+    useEffect(() => {
+       if(isEditing){
+        makePrivateRequest({ url: `/users/${userId}`})
+        .then(response => {
+           setValue('firstName', response.data.firstName);
+           setValue('lastName', response.data.lastName);
+           setValue('email', response.data.email);
+           setValue('role', response.data.role);          
+    
+        })        
+       }
+    },[userId, isEditing, setValue ]);
+
        
     const onSubmit = (data: FormState) => {
-            makePrivateRequest({ url: '/users', method: 'POST' , data })
+            makePrivateRequest({ 
+                url: isEditing ? `/users/${userId}` : '/users', 
+                method: isEditing ? 'PUT' : 'POST', 
+                data 
+            })
             .then(() => {
                 toast.info('Usuário cadastrado com sucesso!');
                 history.push('/admin/users');
@@ -32,7 +57,7 @@ const Form = () => {
 
     return(
         <form onSubmit={handleSubmit(onSubmit)}>
-            <BaseForm title="CADASTRAR UM USUARIO">
+            <BaseForm title={formTitle}>
                 <div className="row">                  
                     <div className="col-6">
                         <div className="margin-bottom-30">
@@ -76,7 +101,11 @@ const Form = () => {
                         <div className="margin-bottom-30">
                             <input
                                 ref={register({ 
-                                    required: "Campo Obrigatório"                                    
+                                    required: "Campo Obrigatório",
+                                    pattern: {
+                                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                                        message: "Entre com email válido !"
+                                      }                                  
                                 })} 
                                 name="email"
                                 type="text" 
