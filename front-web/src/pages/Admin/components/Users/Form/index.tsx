@@ -1,7 +1,8 @@
-import { makePrivateRequest } from 'core/utils/request';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import { makePrivateRequest } from 'core/utils/request';
+import { toast } from 'react-toastify';
 import BaseForm from '../../BaseForm';
 import './styles.scss';
 
@@ -16,9 +17,17 @@ type FormState = {
 const Form = () => {
 
     const {register, handleSubmit, errors} = useForm<FormState>();
+    const history = useHistory();
        
     const onSubmit = (data: FormState) => {
             makePrivateRequest({ url: '/users', method: 'POST' , data })
+            .then(() => {
+                toast.info('Usuário cadastrado com sucesso!');
+                history.push('/admin/users');
+            }).catch(() => {
+                toast.error('Erro ao salvar usuário!');
+                
+            })
        }
 
     return(
@@ -66,7 +75,9 @@ const Form = () => {
                     <div className="col-7">
                         <div className="margin-bottom-30">
                             <input
-                                ref={register({ required: "Campo Obrigatório"})} 
+                                ref={register({ 
+                                    required: "Campo Obrigatório"                                    
+                                })} 
                                 name="email"
                                 type="text" 
                                 className="form-control input-base" 
