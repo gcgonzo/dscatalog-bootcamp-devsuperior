@@ -1,21 +1,21 @@
 import { makePrivateRequest } from 'core/utils/request';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback} from 'react';
 import { useHistory } from 'react-router-dom';
 import {UsersResponse} from 'core/types/User';
 import Card from '../Card';
 import Pagination from 'core/components/Pagination';
 import CardLoader from '../Loaders/UserCardLoader';
+import { toast } from 'react-toastify';
 
 
-const List = () =>{
+const List = () => {
 
     const [usersResponse, setUsersResponse] = useState<UsersResponse>();
     const [isLoadind, setIsLoading] = useState(false);
     const [activePage, setActivePage] = useState(0);
     const history = useHistory();
 
-       
-    useEffect(() => {
+    const getUsers = useCallback(() => {
         const params = {
             page: activePage,
             linesPerPage: 4,
@@ -27,11 +27,26 @@ const List = () =>{
             .then(response => setUsersResponse(response.data))
             .finally(() => {
                 setIsLoading(false);
-            });
-    }, [activePage]);
+            })
+    },[activePage])
+       
+    useEffect(() => {
+        getUsers();
+    }, [getUsers]);
     
     const handleCreate = () => {
         history.push('/admin/users/create');
+    }
+
+    const onRemove = (userId: number) => {
+        makePrivateRequest({ url:`/users/${userId}`, method: 'DELETE'})
+        .then(() => {
+            toast.info('Usuário removido com sucesso!');
+            getUsers();
+        }).catch(() => {
+            toast.error('Erro ao remover o usuário!');
+            
+        })
     }
 
     return(
@@ -42,7 +57,7 @@ const List = () =>{
             <div className="admin-list-container">
             {isLoadind ? <CardLoader /> : (
                     usersResponse?.content.map(use =>
-                        <Card user={use} key={use.id} /> 
+                        <Card user={use} key={use.id}  onRemove={onRemove}/> 
                     )
                 )}
                
