@@ -1,5 +1,6 @@
 import { makePrivateRequest } from 'core/utils/request';
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import BaseForm from '../../BaseForm';
 import './styles.scss';
@@ -12,94 +13,77 @@ type FormState = {
     role: string;   
 }
 
-type FormEvent = React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>;
-
 const Form = () => {
 
-    const[formData, setFormData] = useState<FormState>({
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        role: ''
-    });
-    
-    const handleOnChange = (event: FormEvent ) => {
-       const name = event.target.name;
-        const value = event.target.value;
-         setFormData(data => ({...data, [name]: value}));
-    }
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const payload = {
-            ...formData,
-           roles: [{ id:formData.role }]
-           
-        }
-       makePrivateRequest({url: '/users', method: 'POST' , data: payload})
-       .then(() => {
-            setFormData({
-                firstName: '',
-                lastName: '',
-                email: '',
-                password: '',
-                role: ''
-            })
-       });
-        
-    }
+    const {register, handleSubmit, errors} = useForm<FormState>();
+       
+    const onSubmit = (data: FormState) => {
+            makePrivateRequest({ url: '/users', method: 'POST' , data })
+       }
 
     return(
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
             <BaseForm title="CADASTRAR UM USUARIO">
                 <div className="row">                  
                     <div className="col-6">
                         <div className="margin-bottom-30">
                             <input
+                                ref={register({
+                                    required: "Campo Obrigatório",
+                                    minLength: {value: 5, message: 'O campo tem que ter o mínimo de 5 caracteres'},
+                                    maxLength: {value: 20, message: 'O campo tem que ter o máximo de 20 caracteres'}
+                                })}
                                 name="firstName" 
-                                value={formData.firstName}
                                 type="text" 
                                 className="form-control input-base" 
-                                placeholder="Nome"
-                                onChange={handleOnChange}
+                                placeholder="Nome"                                
                             />
-
+                            {errors.firstName && (
+                            <div className="invalid-feedback d-block" >
+                                {errors.firstName.message}
+                            </div>                        
+                            )}
                         </div>
                     </div>
 
                     <div className="col-6">
                         <div className="margin-bottom-30">
                             <input 
+                                ref={register({ required: "Campo Obrigatório"})}
                                 name="lastName"
-                                value={formData.lastName}
                                 type="text" 
                                 className="form-control input-base" 
                                 placeholder="Sobrenome"
-                                onChange={handleOnChange}
                             />
-
+                            {errors.lastName && (
+                            <div className="invalid-feedback d-block" >
+                                {errors.lastName.message}
+                            </div>                        
+                            )}
                         </div>
                     </div>
 
                     <div className="col-7">
                         <div className="margin-bottom-30">
-                            <input 
+                            <input
+                                ref={register({ required: "Campo Obrigatório"})} 
                                 name="email"
-                                value={formData.email}
                                 type="text" 
                                 className="form-control input-base" 
                                 placeholder="Email"
-                                onChange={handleOnChange}
                             />
+                            {errors.email && (
+                            <div className="invalid-feedback d-block" >
+                                {errors.email.message}
+                            </div>                        
+                            )}
 
                         </div>
                     </div>
                     <div className="col-5">
                         <div className="margin-bottom-30">
                             <select
-                            value={formData.role}
                             className="form-control mb-5"
-                            onChange={handleOnChange}
                             name="role"
                             >
                                 <option value="1">Operador</option>
@@ -112,13 +96,20 @@ const Form = () => {
                     <div className="col-6">
                         <div className="margin-bottom-30">
                             <input 
+                                ref={register({ 
+                                    required: "Campo Obrigatório",
+                                    minLength: {value: 5, message: 'O campo tem que ter o mínimo de 5 caracteres'}
+                                })}
                                 name="password"
-                                value={formData.password}
                                 type="text" 
                                 className="form-control input-base" 
                                 placeholder="Digite aqui a senha"
-                                onChange={handleOnChange}
                             />
+                            {errors.password && (
+                            <div className="invalid-feedback d-block" >
+                                {errors.password.message}
+                            </div>                        
+                            )}
 
                         </div>
                     </div>
@@ -126,13 +117,17 @@ const Form = () => {
                     <div className="col-6">
                         <div className="margin-bottom-30">
                             <input
-                                name="password" 
-                                value={formData.password}
+                               
+                                name="Password" 
                                 type="text" 
                                 className="form-control input-base" 
                                 placeholder="Repita aqui a senha"
-                                onChange={handleOnChange}
                             />
+                            {errors.password && (
+                            <div className="invalid-feedback d-block" >
+                                {errors.password.message}
+                            </div>                        
+                            )}
 
                         </div>
                     </div>

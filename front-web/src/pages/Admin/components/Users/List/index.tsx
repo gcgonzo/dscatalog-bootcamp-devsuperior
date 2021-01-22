@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import {UsersResponse} from 'core/types/User';
 import Card from '../Card';
 import Pagination from 'core/components/Pagination';
+import CardLoader from '../Loaders/UserCardLoader';
 
 
 const List = () =>{
@@ -39,9 +40,12 @@ const List = () =>{
                 ADICIONAR
             </button>
             <div className="admin-list-container">
-                {usersResponse?.content.map(use =>
-                        <Card user={use} key={use.id} />                      
+            {isLoadind ? <CardLoader /> : (
+                    usersResponse?.content.map(use =>
+                        <Card user={use} key={use.id} /> 
+                    )
                 )}
+               
                 {usersResponse && (
                 <Pagination
                     totalPages={usersResponse?.totalPages}
