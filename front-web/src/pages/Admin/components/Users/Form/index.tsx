@@ -1,30 +1,53 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useRef, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { makePrivateRequest  } from 'core/utils/request';
 import { toast } from 'react-toastify';
+import Select from 'react-select';
 import BaseForm from '../../BaseForm';
 import './styles.scss';
+import { Roles } from 'core/types/User';
+
+
 
 type FormState = {
     firstName: string;
     lastName: string;
     email: string;
     password: string;
-    role: string;   
+    passwordRepeat:string;
+    role: Roles[];   
 }
 
 type ParamsType =  {
     userId: string;
 }
 
+
 const Form = () => {
 
-    const {register, handleSubmit, errors, setValue} = useForm<FormState>();
+    const {register, handleSubmit, errors, setValue, watch, control} = useForm<FormState>();
     const history = useHistory();
     const { userId } = useParams<ParamsType>();
+    const [isLoadingRoles, setIsLoadingRoles] = useState(false);
+    const [roles, setRoles]=useState<Roles[]>([]);
     const isEditing = userId !== 'create';
     const formTitle = isEditing ? 'Editar usuário' : 'Cadastrar um usuário'
+    const password = useRef({});
+    password.current = watch("password", "");
+
+    const rol = [
+        {
+            id: 1,
+            authority: 'ROLE_OPERATOR',
+            label: 'Operador'           
+        },
+        {
+            id: 2,
+            authority: 'ROLE_ADMIN',
+            label: 'Admin'
+        }
+    ]
     
     useEffect(() => {
        if(isEditing){
@@ -33,12 +56,19 @@ const Form = () => {
            setValue('firstName', response.data.firstName);
            setValue('lastName', response.data.lastName);
            setValue('email', response.data.email);
-           setValue('role', response.data.role);          
-    
+           setValue('password', response.data.password);
+           setValue('passwordRepeat', response.data.passwordRepeat);
+           setValue('roles', response.data.Roles);        
+          
         })        
        }
     },[userId, isEditing, setValue ]);
 
+    useEffect(() => {
+       makePrivateRequest({ url: '/users' })
+       .then(response => setRoles(response.data.content))
+       .finally(() => setIsLoadingRoles(false)) 
+    }, []);
        
     const onSubmit = (data: FormState) => {
             makePrivateRequest({ 
@@ -122,14 +152,20 @@ const Form = () => {
                     </div>
                     <div className="col-5">
                         <div className="margin-bottom-30">
-                            <select
-                            className="form-control mb-5"
-                            name="role"
-                            >
-                                <option value="1">Operador</option>
-                                <option value="2">Admin</option>
-                                
-                            </select>
+                            <Controller
+                                as={Select}
+                                name="roles"
+                                rules={{ required: true}}
+                                control={control}
+                                options={rol}                                 
+                                getOptionLabel={(option: Roles) => option.authority}
+                                getOptionValue={(option: Roles) => String(option.id)}                    
+                                isLoading={isLoadingRoles}  
+                                classNamePrefix="users-select"
+                                placeholder="Usuário"
+                                isMulti         
+                            />                                
+                            
                         </div>
                     </div>
 
@@ -157,15 +193,19 @@ const Form = () => {
                     <div className="col-6">
                         <div className="margin-bottom-30">
                             <input
-                               
-                                name="Password" 
+                                ref={register({ 
+                                    required: 'Campo obrigratório',
+                                   validate: value =>
+                                    (value === password.current ||'As senhas não combinam')
+                                })}
+                                name="passwordRepeat" 
                                 type="text" 
                                 className="form-control input-base" 
-                                placeholder="Repita aqui a senha"
+                                placeholder="Confirme aqui a senha"
                             />
-                            {errors.password && (
+                            {errors.passwordRepeat && (
                             <div className="invalid-feedback d-block" >
-                                {errors.password.message}
+                                {errors.passwordRepeat && <p>{errors.passwordRepeat.message}</p>}
                             </div>                        
                             )}
 

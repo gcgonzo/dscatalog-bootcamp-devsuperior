@@ -19,6 +19,7 @@ const Card = ({user, onRemove }: Props) => {
                     <h5 className="email-card-admin">
                         {user.email}
                     </h5>
+                    
                 </div>
                 <div className="col-3 pt-3 pr-5">
                     <Link 
